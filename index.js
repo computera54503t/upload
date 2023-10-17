@@ -133,18 +133,23 @@ app.post('/api/lombahito', (req, res) => {
 
   app.get('/readlombahito', (req, res) => {
     const file = 'data/lombatebak.csv';
-
   
-    const data = fs.readFileSync(file)
-    parse(data, (err, records) => {
-      if (err) {
-        console.error(err)
-        return res.status(400).json({success: false, message: 'An error occurred'})
-      }
+    if (fs.existsSync(file)) {
+      const data = fs.readFileSync(file);
+      parse(data, (err, records) => {
+        if (err) {
+          console.error(err);
+          return res.status(400).json({ success: false, message: 'An error occurred' });
+        }
   
-      return res.json({data: records})
-    })
-  })
+        return res.json({ data: records });
+      });
+    } else {
+      // If the file does not exist, return an error response
+      return res.status(404).json({ success: false, message: 'File not found' });
+    }
+  });
+  
 
 app.listen(port, () => {
     console.log(`server is running on port ${port}`);
